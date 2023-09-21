@@ -9,8 +9,15 @@
   - [[#elpaca-package-manager][Elpaca Package Manager]]
   - [[#load-evil-mode][Load Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
+- [[#app-launchers][APP LAUNCHERS]]
+  - [[#counsel-linux-app][Counsel-Linux-App]]
+  - [[#app-launcher][App-Launcher]]
 - [[#all-the-icons][ALL THE ICONS]]
 - [[#buffer-move][BUFFER-MOVE]]
+- [[#company][COMPANY]]
+- [[#dashboard][DASHBOARD]]
+- [[#diminish][DIMINISH]]
+- [[#flycheck][FLYCHECK]]
 - [[#fonts][FONTS]]
   - [[#setting-the-font-face][Setting the Font Face]]
   - [[#zooming-inout][Zooming In/Out]]
@@ -18,11 +25,13 @@
   - [[#disable-menubar-toolbars-and-scrollbars][Disable Menubar, Toolbars and Scrollbars]]
   - [[#display-line-numbers-and-truncated-lines][Display Line Numbers and Truncated Lines]]
 - [[#ivy-counsel][IVY (COUNSEL)]]
+- [[#language-support][LANGUAGE SUPPORT]]
 - [[#org-mode][ORG MODE]]
   - [[#enabling-table-of-contents][Enabling Table of Contents]]
   - [[#enabling-org-bullets][Enabling Org Bullets]]
   - [[#disable-electric-indent][Disable Electric Indent]]
   - [[#source-code-block-tag-expansion][Source Code Block Tag Expansion]]
+- [[#projectile][PROJECTILE]]
 - [[#rainbow-mode][RAINBOW MODE]]
 - [[#reload-emacs][RELOAD EMACS]]
 - [[#shells-and-terminals][SHELLS AND TERMINALS]]
@@ -388,7 +397,7 @@ Emacs Dashboard is an extensible startup screen showing you recent files, bookma
     (setq dashboard-set-file-icons t)
     (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
     ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-    (setq dashboard-startup-banner "/home/dt/.config/emacs/images/emacs-dash.png")  ;; use custom image as banner
+    (setq dashboard-startup-banner "/home/pazthor/.config/emacs/images/emacs-dash.png")  ;; use custom image as banner
     (setq dashboard-center-content nil) ;; set to 't' for centered content
     (setq dashboard-items '((recents . 5)
                             (agenda . 5 )
@@ -652,7 +661,7 @@ Vterm is a terminal emulator within Emacs.  The 'shell-file-name' setting sets t
 #+begin_src emacs-lisp
 (use-package vterm
 :config
-(setq shell-file-name "/bin/fish"
+(setq shell-file-name "/bin/sh"
       vterm-max-scrollback 5000))
 #+end_src
 

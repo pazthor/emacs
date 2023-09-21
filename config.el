@@ -307,7 +307,7 @@ one, an error is signaled."
   (setq dashboard-set-file-icons t)
   (setq dashboard-banner-logo-title "Emacs Is More Than A Text Editor!")
   ;;(setq dashboard-startup-banner 'logo) ;; use standard emacs logo as banner
-  (setq dashboard-startup-banner "/home/dt/.config/emacs/images/emacs-dash.png")  ;; use custom image as banner
+  (setq dashboard-startup-banner "/home/pazthor/.config/emacs/images/emacs-dash.png")  ;; use custom image as banner
   (setq dashboard-center-content nil) ;; set to 't' for centered content
   (setq dashboard-items '((recents . 5)
                           (agenda . 5 )
@@ -459,7 +459,7 @@ one, an error is signaled."
 
 (use-package vterm
 :config
-(setq shell-file-name "/bin/fish"
+(setq shell-file-name "/bin/sh"
       vterm-max-scrollback 5000))
 
 (use-package vterm-toggle
