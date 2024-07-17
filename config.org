@@ -4,6 +4,7 @@
 #+STARTUP: showeverything
 #+OPTIONS: toc:2
 
+
 * TABLE OF CONTENTS :toc:
 - [[#important-programs-to-load-first][IMPORTANT PROGRAMS TO LOAD FIRST]]
   - [[#adding-the-scripts-directory-to-path][Adding the scripts directory to path]]
@@ -36,6 +37,7 @@
   - [[#diminish-org-indent-mode][Diminish Org Indent Mode]]
   - [[#org-level-headers][Org Level Headers]]
   - [[#source-code-block-tag-expansion][Source Code Block Tag Expansion]]
+  - [[#org-roam][Org-roam]]
 - [[#perspective][PERSPECTIVE]]
 - [[#projectile][PROJECTILE]]
 - [[#rainbow-delimiters][RAINBOW DELIMITERS]]
@@ -50,6 +52,10 @@
 - [[#tldr][TLDR]]
 - [[#transparency][TRANSPARENCY]]
 - [[#which-key][WHICH-KEY]]
+- [[#configuración-de-edebug-con-consejos-y-eros][Configuración de Edebug con consejos y Eros]]
+  - [[#usar-use-package-para-eros][Usar `use-package` para `eros`]]
+  - [[#consejo-para-edebug-compute-previous-result][Consejo para `edebug-compute-previous-result`]]
+  - [[#consejo-para-edebug-previous-result][Consejo para `edebug-previous-result`]]
 
 * IMPORTANT PROGRAMS TO LOAD FIRST
 To keep this =config.org= a reasonable length, I have moved a lot of code to individual scripts that will be sourced by this config.  These scripts are found in "~/.config/emacs/scripts" and do not contain any code that most people are likely to need to edit.
@@ -63,7 +69,7 @@ To keep this =config.org= a reasonable length, I have moved a lot of code to ind
 #+begin_src emacs-lisp
 (require 'elpaca-setup)  ;; The Elpaca Package Manager
 (require 'buffer-move)   ;; Buffer-move for better window management
-(require 'app-launchers) ;; Use emacs as a run launcher like dmenu (experimental)
+;; (require 'app-launchers) ;; Use emacs as a run launcher like dmenu (experimental)
 #+end_src
 
 * ALL THE ICONS
@@ -256,33 +262,34 @@ Defining the various fonts that Emacs will use.
 
 ** Setting the Font Face
 #+begin_src emacs-lisp
-(set-face-attribute 'default nil
-  :font "FiraCode Nerd Font Mono"
-  :height 110
-  :weight 'medium)
-(set-face-attribute 'variable-pitch nil
-  :font "Agave Nerd Font Mono"
-  :height 120
-  :weight 'medium)
-(set-face-attribute 'fixed-pitch nil
-  :font "FiraCode Nerd Font Mono"
-  :height 110
-  :weight 'medium)
-;; Makes commented text and keywords italics.
-;; This is working in emacsclient but not emacs.
-;; Your font must have an italic face available.
-(set-face-attribute 'font-lock-comment-face nil
-  :slant 'italic)
-(set-face-attribute 'font-lock-keyword-face nil
-  :slant 'italic)
+  (set-face-attribute 'default nil
+    :font "OperatorMonoSSm Nerd Font"
+    :height 110
+    :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+    :font "OperatorMonoSSm Nerd Font"
 
-;; This sets the default font on all graphical frames created after restarting Emacs.
-;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
-;; are not right unless I also add this method of setting the default font.
-(add-to-list 'default-frame-alist '(font . "FiraCode Nerd Font Mono-11"))
+    :height 120
+    :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+    :font "Fira Code Nerd Font"
+    :height 110
+    :weight 'medium)
+  ;; Makes commented text and keywords italics.
+  ;; This is working in emacsclient but not emacs.
+  ;; Your font must have an italic face available.
+  (set-face-attribute 'font-lock-comment-face nil
+    :slant 'italic)
+  (set-face-attribute 'font-lock-keyword-face nil
+    :slant 'italic)
 
-;; Uncomment the following line if line spacing needs adjusting.
-(setq-default line-spacing 0.12)
+  ;; This sets the default font on all graphical frames created after restarting Emacs.
+  ;; Does the same thing as 'set-face-attribute default' above, but emacsclient fonts
+  ;; are not right unless I also add this method of setting the default font.
+  (add-to-list 'default-frame-alist '(font . "Fira Code Nerd Font"))
+
+  ;; Uncomment the following line if line spacing needs adjusting.
+  (setq-default line-spacing 0.12)
 
 #+end_src
 
@@ -496,6 +503,16 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
     "w J" '(buf-move-down :wk "Buffer move down")
     "w K" '(buf-move-up :wk "Buffer move up")
     "w L" '(buf-move-right :wk "Buffer move right"))
+  
+   (dt/leader-keys
+"n" '(:ignore t :wk "Org Roam ")
+"n l" '(org-roam-buffer-toggle :which-key "toggle org-roam buffer")
+"n f" '(org-roam-node-find :which-key "find node")
+"n i" '(org-roam-node-insert :which-key "insert node")
+"n c" '(org-roam-capture :which-key "capture node")
+"n j" '(org-roam-dailies-caputure-today :which-key "capture today node")
+)
+
 )
 
 #+end_src
@@ -519,9 +536,12 @@ You can use the bindings CTRL plus =/- for zooming in/out.  You can also use CTR
 [[https://magit.vc/manual/][Magit]] is a full-featured git client for Emacs.
 
 #+begin_src emacs-lisp
-(use-package magit)
-
+(use-package transient :ensure t)
+(use-package magit
+:ensure t
+:after (:all transient))
 #+end_src
+
 
 * HIGHLIGHT TODO
 Adding highlights to TODO and related words.
@@ -573,17 +593,16 @@ Adding highlights to TODO and related words.
   :init (all-the-icons-ivy-rich-mode 1))
 
 (use-package ivy-rich
-  :after ivy
   :ensure t
-  :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
-  :custom
-  (ivy-virtual-abbreviate 'full
-   ivy-rich-switch-buffer-align-virtual-buffer t
-   ivy-rich-path-style 'abbrev)
-  :config
-  (ivy-set-display-transformer 'ivy-switch-buffer
-                               'ivy-rich-switch-buffer-transformer))
-
+  :after (:all ivy counsel)
+  :init(setq
+	ivy-rich-path-style 'abbrev
+	ivy-virtual-abbreviate 'full
+	ivy-rich-switch-buffer-align-virtual-buffer t
+	ivy-rich-parse-remote-file-path t
+)
+  :config(ivy-rich-mode 1)
+) 
 #+end_src
 
 * LANGUAGE SUPPORT
@@ -593,7 +612,7 @@ Emacs has built-in programming language modes for Lisp, Scheme, DSSSL, Ada, ASM,
 (use-package haskell-mode)
 (use-package lua-mode)
 (use-package php-mode)
-
+(use-package yaml-mode)
 #+end_src
 
 * MINIBUFFER ESCAPE
@@ -702,6 +721,23 @@ Org-tempo is not a separate package but a module within org that can be enabled.
 #+begin_src emacs-lisp 
 (require 'org-tempo)
 #+end_src
+
+** Org-roam
+Configuración para instalar y configurar org-roam.
+
+#+begin_src emacs-lisp
+(use-package org-roam
+  :after (:all org)
+:ensure t
+  :custom
+  (org-roam-directory (file-truename "~/Documentos/org-roam"))
+  (org-roam-completion-everywhere t)
+  :config
+  (org-roam-setup))
+
+#+end_src
+
+
 
 * PERSPECTIVE
 [[https://github.com/nex3/perspective-el][Perspective]] provides multiple named workspaces (or "perspectives") in Emacs, similar to multiple desktops in window managers.  Each perspective has its own buffer list and its own window layout, along with some other isolated niceties, like the [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Xref.html][xref]] ring.
@@ -914,3 +950,47 @@ With Emacs version 29, true transparency has been added.  I have turned transpar
 	  which-key-allow-imprecise-window-fit nil
 	  which-key-separator " → " ))
 #+end_src
+
+* Configuración de Edebug con consejos y Eros
+
+
+
+** Usar `use-package` para `eros`
+
+#+BEGIN_SRC emacs-lisp
+(use-package eros
+  :ensure t)
+#+END_SRC
+
+** Consejo para `edebug-compute-previous-result`
+
+#+BEGIN_SRC emacs-lisp
+(defun adviced:edebug-compute-previous-result (_ &rest r)
+  "Adviced `edebug-compute-previous-result'."
+  (let ((previous-value (nth 0 r)))
+    (if edebug-unwrap-results
+        (setq previous-value
+              (edebug-unwrap* previous-value)))
+    (setq edebug-previous-result
+          (edebug-safe-prin1-to-string previous-value))))
+
+(advice-add #'edebug-compute-previous-result
+            :around
+            #'adviced:edebug-compute-previous-result)
+#+END_SRC
+
+** Consejo para `edebug-previous-result`
+
+#+BEGIN_SRC emacs-lisp
+(defun adviced:edebug-previous-result (_ &rest r)
+  "Adviced `edebug-previous-result'."
+  (eros--make-result-overlay edebug-previous-result
+    :where (point)
+    :duration eros-eval-result-duration))
+
+(advice-add #'edebug-previous-result
+            :around
+            #'adviced:edebug-previous-result)
+#+END_SRC
+
+ 
